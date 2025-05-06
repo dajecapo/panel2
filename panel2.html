@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel de Administración</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+      color: #333;
+    }
+
+    .login, .panel {
+      max-width: 1000px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #4a148c;
+      margin-bottom: 10px;
+      text-transform: capitalize;
+    }
+
+    input[type="password"],
+    input[type="text"]#clave {
+      width: 100% !important;
+      padding: 12px;
+      margin: 20px 0 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #6a1b9a;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .nav-buttons {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .nav-buttons button {
+      margin: 0 5px;
+      background-color: #d1c4e9;
+      color: #4a148c;
+    }
+
+    .nav-buttons button.active {
+      background-color: #6a1b9a;
+      color: white;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .checkbox {
+      font-size: 14px;
+      margin-top: -10px;
+      margin-bottom: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ccc;
+      vertical-align: middle;
+    }
+
+    th {
+      background-color: #ede7f6;
+      text-transform: lowercase;
+    }
+
+    tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+
+    .acciones {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+    }
+
+    .acciones button {
+      white-space: nowrap;
+    }
+
+    .seccion {
+      display: none;
+    }
+
+    .seccion.activa {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login" id="login">
+  <h1>Acceso al Panel</h1>
+  <input type="password" id="clave" placeholder="Ingresa la clave de acceso">
+  <div class="checkbox">
+    <input type="checkbox" id="verClave" onclick="toggleClave()"> Ver contraseña
+  </div>
+  <button onclick="verificarAcceso()">Entrar</button>
+  <div class="error" id="errorClave" style="display:none;">Clave incorrecta</div>
+</div>
+
+<div class="panel" id="panel" style="display:none;">
+  <h1>Panel de Administración</h1>
+  <div class="nav-buttons">
+    <button id="btnSumate" onclick="mostrarSeccion('sumate')" class="active">Solicitudes de Sabios</button>
+    <button id="btnConsultas" onclick="mostrarSeccion('consultas')">Consultas a Sabios</button>
+  </div>
+
+  <!-- Sección SUMATE -->
+  <div class="seccion activa" id="seccionSumate">
+    <table id="tablaSumate">
+      <thead>
+        <tr>
+          <th>nombre</th>
+          <th>edad</th>
+          <th>area_conocimiento</th>
+          <th>email</th>
+          <th>telefono</th>
+          <th>fecha</th>
+          <th>estatus</th>
+          <th>acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Sección CONSULTAS -->
+  <div class="seccion" id="seccionConsultas">
+    <table id="tablaConsultas">
+      <thead>
+        <tr>
+          <th>nombre</th>
+          <th>correo</th>
+          <th>telefono</th>
+          <th>area</th>
+          <th>horario</th>
+          <th>pregunta</th>
+          <th>estatus</th>
+          <th>acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const claveCorrecta = "sabios2025";
+  const url = "https://script.google.com/macros/s/AKfycbzb4ZvKX-6kpTni3cudJEs650tGoSEQNAPM9WuAhnXLcP0EJkpjvbmaI0u14Uqc6Za0/exec";
+
+  function verificarAcceso() {
+    const clave = document.getElementById('clave').value.trim();
+    const error = document.getElementById('errorClave');
+
+    if (clave === claveCorrecta) {
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('panel').style.display = 'block';
+      cargarDatosSumate();
+      cargarDatosConsultas();
+    } else {
+      error.style.display = 'block';
+    }
+  }
+
+  function toggleClave() {
+    const campo = document.getElementById('clave');
+    campo.type = campo.type === 'password' ? 'text' : 'password';
+  }
+
+  function mostrarSeccion(seccion) {
+    document.querySelectorAll('.seccion').forEach(div => div.classList.remove('activa'));
+    document.querySelectorAll('.nav-buttons button').forEach(btn => btn.classList.remove('active'));
+
+    if (seccion === 'sumate') {
+      document.getElementById('seccionSumate').classList.add('activa');
+      document.getElementById('btnSumate').classList.add('active');
+    } else if (seccion === 'consultas') {
+      document.getElementById('seccionConsultas').classList.add('activa');
+      document.getElementById('btnConsultas').classList.add('active');
+    }
+  }
+
+  function cargarDatosSumate() {
+    fetch(url)
+      .then(res => res.json())
+      .then(datos => {
+        const tbody = document.querySelector("#tablaSumate tbody");
+        tbody.innerHTML = "";
+
+        for (let i = 1; i < datos.length; i++) {
+          const fila = datos[i];
+          const tr = document.createElement("tr");
+
+          fila.forEach((valor, index) => {
+            const td = document.createElement("td");
+            if (index === 5 && valor) {
+              const fecha = new Date(valor);
+              td.textContent = fecha.toLocaleDateString("es-MX");
+            } else {
+              td.textContent = valor;
+            }
+            tr.appendChild(td);
+          });
+
+          const accionesTd = document.createElement("td");
+          accionesTd.className = "acciones";
+
+          const aprobarBtn = document.createElement("button");
+          aprobarBtn.textContent = "Aprobar";
+          aprobarBtn.onclick = () => actualizarEstatus(i, "aprobar");
+
+          const eliminarBtn = document.createElement("button");
+          eliminarBtn.textContent = "Eliminar";
+          eliminarBtn.onclick = () => actualizarEstatus(i, "eliminar");
+
+          accionesTd.appendChild(aprobarBtn);
+          accionesTd.appendChild(eliminarBtn);
+          tr.appendChild(accionesTd);
+
+          tbody.appendChild(tr);
+        }
+      });
+  }
+
+  function cargarDatosConsultas() {
+    fetch(url + "?tipo=consultas")
+      .then(res => res.json())
+      .then(datos => {
+        const tbody = document.querySelector("#tablaConsultas tbody");
+        tbody.innerHTML = "";
+
+        for (let i = 1; i < datos.length; i++) {
+          const fila = datos[i];
+          const tr = document.createElement("tr");
+
+          for (let j = 0; j < 7; j++) {
+            const td = document.createElement("td");
+            td.textContent = fila[j] || "";
+            tr.appendChild(td);
+          }
+
+          const accionesTd = document.createElement("td");
+          accionesTd.className = "acciones";
+
+          const aprobarBtn = document.createElement("button");
+          aprobarBtn.textContent = "Aprobar";
+          aprobarBtn.onclick = () => actualizarEstatus(i, "aprobar", "consultas");
+
+          const eliminarBtn = document.createElement("button");
+          eliminarBtn.textContent = "Eliminar";
+          eliminarBtn.onclick = () => actualizarEstatus(i, "eliminar", "consultas");
+
+          accionesTd.appendChild(aprobarBtn);
+          accionesTd.appendChild(eliminarBtn);
+          tr.appendChild(accionesTd);
+
+          tbody.appendChild(tr);
+        }
+      });
+  }
+
+  function actualizarEstatus(fila, accion, tipo = "sumate") {
+    fetch(url, {
+      method: 'POST',
+      body: new URLSearchParams({ fila, accion, tipo })
+    })
+    .then(res => res.text())
+    .then(res => {
+      if (res === "OK") {
+        if (tipo === "sumate") cargarDatosSumate();
+        else cargarDatosConsultas();
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
