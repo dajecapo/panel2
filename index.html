@@ -92,7 +92,7 @@
 
     th {
       background-color: #ede7f6;
-      text-transform: lowercase;
+      text-transform: capitalize;
     }
 
     tr:nth-child(even) {
@@ -137,7 +137,6 @@
     <button id="btnConsultas" onclick="mostrarSeccion('consultas')">Consultas a Sabios</button>
   </div>
 
-  <!-- Sección SUMATE -->
   <div class="seccion activa" id="seccionSumate">
     <table id="tablaSumate">
       <thead>
@@ -156,17 +155,15 @@
     </table>
   </div>
 
-  <!-- Sección CONSULTAS -->
   <div class="seccion" id="seccionConsultas">
     <table id="tablaConsultas">
       <thead>
         <tr>
           <th>nombre</th>
-          <th>correo</th>
           <th>telefono</th>
-          <th>area</th>
-          <th>horario</th>
+          <th>email</th>
           <th>pregunta</th>
+          <th>fecha</th>
           <th>estatus</th>
           <th>acciones</th>
         </tr>
@@ -265,7 +262,7 @@
           const fila = datos[i];
           const tr = document.createElement("tr");
 
-          for (let j = 0; j < 7; j++) {
+          for (let j = 0; j < 6; j++) {
             const td = document.createElement("td");
             td.textContent = fila[j] || "";
             tr.appendChild(td);
