@@ -262,12 +262,14 @@
           const fila = datos[i];
           const tr = document.createElement("tr");
 
-          // Columnas exactas: Nombre, Teléfono, Email, Pregunta, Fecha, Estatus
-          for (let j = 0; j < 6; j++) {
+          const [nombre, telefono, email, pregunta, fecha, estatus] = fila;
+
+          const columnas = [nombre, telefono, email, pregunta, fecha, estatus];
+          columnas.forEach(valor => {
             const td = document.createElement("td");
-            td.textContent = fila[j] || "";
+            td.textContent = valor || "";
             tr.appendChild(td);
-          }
+          });
 
           const accionesTd = document.createElement("td");
           accionesTd.className = "acciones";
